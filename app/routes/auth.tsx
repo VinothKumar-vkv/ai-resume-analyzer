@@ -1,21 +1,26 @@
 import { usePuterStore } from "~/lib/puter";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-
-export const meta = () => ([
-    { title: 'Resumind | Auth' },
-    { name: 'description', content: 'Log into your account' },
-]);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const meta = () => [
+    { title: "Resumind | Auth" },
+    { name: "description", content: "Log into your account" },
+];
 
 const Auth = () => {
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
     const navigate = useNavigate();
-    const next = location.search.split('next=')[1] || "/";
+    const next = decodeURIComponent(
+        new URLSearchParams(location.search).get("next") || "/"
+    );
 
+    // Redirect when already authenticated
     useEffect(() => {
-        if (auth.isAuthenticated) navigate(next);
-    }, [auth.isAuthenticated, next, navigate]);
+        if (!isLoading && auth.isAuthenticated) {
+            navigate(next);
+        }
+    }, [isLoading, auth.isAuthenticated, next, navigate]);
 
     return (
         <main className="bg-[url('/images/bg-auth.svg')] bg-cover min-h-screen flex items-center justify-center">
